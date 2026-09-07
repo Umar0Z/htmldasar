@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>CatatAja</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sonsie+One&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+    *{ margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+    body{ background:#f1f5f9; padding:20px; }
+    .container, .topbar{ max-width:1000px; margin:auto; }
+    .topbar{ background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:14px 20px; display:flex; justify-content:center; align-items:center; margin-bottom:20px; }
+    .topbar-left{ display:flex; align-items:center; justify-content:center; gap:12px; }
+    
+    /* STYLE TEKS GRADASI BIRU + GARIS ABU-ABU BRUSH */
+    .logo-text { 
+        font-family: 'Sonsie One', system-ui, sans-serif; 
+        font-size: 26px; 
+        font-weight: 400; 
+        background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: 0.5px; 
+        position: relative; 
+        display: inline-block; 
+        padding-bottom: 12px; 
+    }
+    .logo-text::after {
+        content: "";
+        position: absolute;
+        left: -4%;
+        width: 108%;
+        height: 6px;
+        background: #334155; 
+        bottom: 2px;
+        border-radius: 4px 14px 6px 24px / 4px 5px 4px 5px;
+        opacity: 0.95;
+    }
+    
+    .logo-box{ width:40px; height:40px; display:flex; align-items:center; justify-content:center; }
+    .logo-icon{ width:100%; height:100%; display:block; }
+
+    .section-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; width: 100%; }
+    .saldo-inline{ display:flex; flex-direction:column; gap:4px; padding:8px 12px; border:1px solid #e2e8f0; border-radius:10px; background:#f8fafc; min-width:220px; height:46px; justify-content:center; }
+    .saldo-text{ font-size:11px; color:#64748b; line-height:1.1; }
+    .saldo-value{ font-size:15px; font-weight:700; color:#0f172a; line-height:1.1; }
+    
+    /* PERBAIKAN UTAMA: Kotak kosong mengisi penuh area sisa card luar secara presisi */
+    .empty{ 
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border: 1px dashed #cbd5e1; 
+        border-radius: 12px; 
+        color: #64748b; 
+        width: 100%; 
+        flex: 1; /* Mengambil sisa ruang tinggi card */
+        margin-top: 5px;
+    }
+    
+    .card{ background:#fff; padding:20px; border-radius:14px; border:1px solid #e2e8f0; margin-bottom:20px; }
+    .section-title{ display:flex; align-items:center; gap:12px; color:#0f172a; font-weight:800; font-size:19px; font-family: Arial, sans-serif; }
+    .input-box{ background:#f8fafc; padding:12px; border-radius:12px; display:flex; gap:10px; flex-wrap:wrap; border:1px solid #e2e8f0; margin-top: 15px; }
+    input, select{ padding:10px; border:1px solid #cbd5e1; border-radius:10px; flex:1; min-width:150px; }
+    input:focus, select:focus{ border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,0.15); outline:none; }
+    .btn{ background:#2563eb; color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer; }
+    .item{ display:flex; justify-content:space-between; padding:12px; border:1px solid #e2e8f0; border-radius:12px; margin-top:8px; background:#fff; align-items: center; }
+    .income{ color:#16a34a; font-weight:600; }
+    .expense{ color:#dc2626; font-weight:600; }
+    .meta{ font-size:11px; color:#64748b; }
+    .delete-btn{ background:none; border:none; cursor:pointer; margin-left:10px; padding:6px; border-radius:8px; transition:0.2s; }
+    .delete-btn:hover{ background:rgba(239,68,68,0.12); box-shadow:0 0 0 2px rgba(239,68,68,0.25); }
+    .delete-btn:active{ transform:scale(0.92); background:rgba(239,68,68,0.18); }
+    .trash-icon{ width:18px; height:18px; fill:#ef4444; }
+    
+    /* Mengubah wadah riwayat menjadi flex agar elemen .empty di dalamnya patuh mengisi tinggi penuh */
+    .card:last-child{ height: 50vh; display: flex; flex-direction: column; }
+    #list { overflow-y: auto; width: 100%; }
+    
+    .title-icon, .title-icon svg{ width:22px; height:22px; display:flex; align-items:center; justify-content:center; color:#0f172a; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-left">
+        <div class="logo-box">
+            <svg viewBox="0 0 24 24" class="logo-icon" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#3b82f6"/>
+                        <stop offset="100%" stop-color="#1d4ed8"/>
+                    </linearGradient>
+                </defs>
+                <path d="M11 3L18 10L11 17L4 10Z" fill="url(#blueGrad)"/>
+                <path d="M11 6V14M7.5 10H14.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.75"/>
+                <path d="M18 14C18 15.5 19.5 16 21 16C19.5 16 18 16.5 18 18C18 16.5 16.5 16 15 16C16.5 16 18 15.5 18 14Z" fill="#60a5fa"/>
+            </svg>
+        </div>
+        <div class="logo-text">CatatAja</div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h3 class="section-title"><span class="title-icon"><i data-lucide="plus-circle"></i></span> Tambah Transaksi</h3>
+        <div class="input-box">
+            <input id="nominal" type="text" inputmode="numeric" placeholder="Nominal">
+            <input id="desc" placeholder="Keterangan">
+            <select id="type">
+                <option value="" disabled selected hidden>Jenis transaksi</option>
+                <option value="income">Pemasukan</option>
+                <option value="expense">Pengeluaran</option>
+            </select>
+            <input type="date" id="time">
+            <button class="btn" onclick="addTransaction()">Simpan</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="section-head">
+            <h3 class="section-title"><span class="title-icon"><i data-lucide="clipboard-list"></i></span> Riwayat Transaksi</h3>
+            <div class="saldo-inline"><div class="saldo-text">Total Saldo</div><div class="saldo-value" id="saldo">Rp0</div></div>
+        </div>
+        <div id="empty" class="empty">
+            <div style="margin-bottom:10px;"><svg width="48" height="48" viewBox="0 0 24 24" fill="#cbd5e1"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg></div>
+            Belum ada transaksi
+        </div>
+        <div id="list"></div>
+    </div>
+</div>
+
+<script>
+let saldo = 0;
+const list = document.getElementById("list");
+const empty = document.getElementById("empty");
+const saldoEl = document.getElementById("saldo");
+
+function rupiah(n){ return "Rp " + n.toLocaleString("id-ID"); }
+function formatDate(d){
+    if(!d) return "-";
+    const x = new Date(d);
+    return `${x.getDate()}/${x.getMonth()+1}/${x.getFullYear().toString().slice(2)}`;
+}
+
+function addTransaction(){
+    const nominal = Number(document.getElementById("nominal").value);
+    const desc = document.getElementById("desc").value;
+    const type = document.getElementById("type").value;
+    const time = document.getElementById("time").value;
+
+    if(!nominal || !desc || !type){ alert("Tolong lengkapi data terlebih dahulu"); return; }
+    if(type === "income") saldo += nominal; else saldo -= nominal;
+
+    const item = document.createElement("div");
+    item.className = "item";
+    item.innerHTML = `
+        <div>
+            <div>${desc}</div>
+            <div class="meta">
+                <svg class="meta-icon" viewBox="0 0 24 24" width="14" height="14"><path d="M7 2v3M17 2v3M3 8h18M5 5h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" fill="none" stroke="#64748b" stroke-width="1.5"/></svg>
+                <span>${formatDate(time)}</span>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center;">
+            <div class="${type}">${type === "income" ? "+" : "-"} ${rupiah(nominal)}</div>
+            <button class="delete-btn" onclick="deleteItem(this, ${nominal}, '${type}')">
+                <svg class="trash-icon" viewBox="0 0 24 24"><path d="M6 7h12l-1 14H7L6 7zm3-3h6l1 2H8l1-2z"/></svg>
+            </button>
+        </div>`;
+
+    list.appendChild(item);
+    saldoEl.innerText = rupiah(saldo);
+    empty.style.display = "none";
+
+    document.getElementById("nominal").value = "";
+    document.getElementById("desc").value = "";
+    document.getElementById("time").value = "";
+    document.getElementById("type").value = "";
+}
+
+function deleteItem(btn, nominal, type){
+    btn.parentElement.parentElement.remove();
+    if(type === "income") saldo -= nominal; else saldo += nominal;
+    saldoEl.innerText = rupiah(saldo);
+    if(list.children.length === 0){ empty.style.display = "flex"; }
+}
+
+document.getElementById("nominal").addEventListener("input", function () {
+    this.value = this.value.replace(/[^0-9]/g, "");
+});
+</script>
+</body>
+<script>lucide.createIcons();</script>
+</html>
